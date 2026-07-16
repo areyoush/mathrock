@@ -1,11 +1,14 @@
 package mathrock
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 // Vector represents a mathematical vector as a slice of float64 values.
 type Vector []float64
 
-// Dot returns the dot product of v and other. 
+// Dot returns the dot product vector of v and other. 
 // It returns an error if the two vectors have different lengths.
 func (v Vector) Dot(other Vector) (float64, error) {
 	if len(v) != len(other) {
@@ -48,11 +51,27 @@ func (v Vector) Subtract(other Vector) (Vector, error) {
 	return result, nil
 }
 
-// Scale returns the product vector of v and a scalar
+// Scale returns the product vector of v and a scalar.
 func (v Vector) Scale(scalar float64) Vector {
 	result := make(Vector, len(v))
 	for i := range v {
 		result[i] = v[i] * scalar
 	}
 	return result
+}
+
+// Norm returns the Euclidean length (L2 norm) of v.
+func (v Vector) Norm() float64 {
+	sumOfSquares, _ := v.Dot(v)
+	return math.Sqrt(sumOfSquares)
+}
+
+// Normalize returns a new Vector with the same direction as v, scaled to length 1. 
+// It returns an error if v is the zero vector.
+func (v Vector) Normalize() (Vector, error) {
+	norm := v.Norm()
+	if norm == 0 {
+		return nil, fmt.Errorf("mathrock: cannot normalize the zero vector")
+	}
+	return v.Scale(1 / norm), nil
 }
