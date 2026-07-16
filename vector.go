@@ -19,3 +19,17 @@ func (v Vector) Dot(other Vector) (float64, error) {
 
 	return sum, nil
 }
+
+// Add returns the sum of v and the other.
+// It returns and error if two vectors have different lengths.
+func (v Vector) Add(other Vector) (Vector, error) {
+	if len(v) != len(other) {
+		return nil, fmt.Errorf("mathrock: vectors must have equal length got %d and %d", len(v), len(other))
+	}
+
+	result := make(Vector, len(v))
+	for i := range v {
+		result[i] = v[i] + other[i]
+	}
+	return result, nil
+}

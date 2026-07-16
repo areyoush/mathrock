@@ -1,35 +1,38 @@
 package mathrock
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestVectorDot(t *testing.T) {
 	tests := []struct {
-		name	string
-		a		Vector
-		b		Vector
-		want	float64
-		wantErr	bool
+		name    string
+		a       Vector
+		b       Vector
+		want    float64
+		wantErr bool
 	}{
 		{
-			name:		"equal length vectors",
-			a:			Vector{1, 2, 3},
-			b:			Vector{4, 5, 6},
-			want:		32,
-			wantErr:	false,
+			name:    "equal length vectors",
+			a:       Vector{1, 2, 3},
+			b:       Vector{4, 5, 6},
+			want:    32,
+			wantErr: false,
 		},
 		{
-			name:		"mismatched length vectors",
-			a:			Vector{1, 2},
-			b:			Vector{1, 2, 3},
-			want:		0,
-			wantErr:	true,
+			name:    "mismatched length vectors",
+			a:       Vector{1, 2},
+			b:       Vector{1, 2, 3},
+			want:    0,
+			wantErr: true,
 		},
 		{
-			name:		"empty vectors",
-			a:			Vector{},
-			b:			Vector{},
-			want:		0,
-			wantErr:	false,
+			name:    "empty vectors",
+			a:       Vector{},
+			b:       Vector{},
+			want:    0,
+			wantErr: false,
 		},
 	}
 
@@ -48,3 +51,48 @@ func TestVectorDot(t *testing.T) {
 	}
 }
 
+func TestVectorAdd(t *testing.T) {
+	tests := []struct {
+		name    string
+		a       Vector
+		b       Vector
+		want    Vector
+		wantErr bool
+	}{
+		{
+			name:    "equal length vectors",
+			a:       Vector{1, 2, 3},
+			b:       Vector{4, 5, 6},
+			want:    Vector{5, 7, 9},
+			wantErr: false,
+		},
+		{
+			name:    "mismatched length vectors",
+			a:       Vector{1, 2},
+			b:       Vector{1, 2, 3},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name:    "empty vectors",
+			a:       Vector{},
+			b:       Vector{},
+			want:    Vector{},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.a.Add(tt.b)
+
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("Add() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Add() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
