@@ -20,7 +20,7 @@ func (v Vector) Dot(other Vector) (float64, error) {
 	return sum, nil
 }
 
-// Add returns the sum of v and the other.
+// Add returns a sum vector of v and the other.
 // It returns an error if two vectors have different lengths.
 func (v Vector) Add(other Vector) (Vector, error) {
 	if len(v) != len(other) {
@@ -34,7 +34,7 @@ func (v Vector) Add(other Vector) (Vector, error) {
 	return result, nil
 }
 
-// Subtract returns the difference of v and the other.
+// Subtract returns a difference vector of v and the other.
 // It returns an error if two vectors have different lengths.
 func (v Vector) Subtract(other Vector) (Vector, error) {
 	if len(v) != len(other) {
@@ -46,4 +46,13 @@ func (v Vector) Subtract(other Vector) (Vector, error) {
 		result[i] = v[i] - other[i]
 	}
 	return result, nil
+}
+
+// Scale returns the product vector of v and a scalar
+func (v Vector) Scale(scalar float64) Vector {
+	result := make(Vector, len(v))
+	for i := range v {
+		result[i] = v[i] * scalar
+	}
+	return result
 }

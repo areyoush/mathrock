@@ -149,3 +149,47 @@ func TestVectorSubtract(t *testing.T) {
 		})
 	}
 }
+
+func TestVectorScale(t *testing.T) {
+	tests := []struct {
+		name   string
+		v      Vector
+		scalar float64
+		want   Vector
+	}{
+		{
+			name:   "positive scalar",
+			v:      Vector{1, 2, 3},
+			scalar: 2,
+			want:   Vector{2, 4, 6},
+		},
+		{
+			name:   "negative scalar",
+			v:      Vector{1, 2, 3},
+			scalar: -1,
+			want:   Vector{-1, -2, -3},
+		},
+		{
+			name:   "zero scalar",
+			v:      Vector{1, 2, 3},
+			scalar: 0,
+			want:   Vector{0, 0, 0},
+		},
+		{
+			name:   "empty vector",
+			v:      Vector{},
+			scalar: 5,
+			want:   Vector{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.v.Scale(tt.scalar)
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Scale() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
