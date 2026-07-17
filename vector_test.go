@@ -409,3 +409,55 @@ func TestVectorSum(t *testing.T) {
 		})
 	}
 }
+
+func TestVectorMean(t *testing.T) {
+	tests := []struct {
+		name    string
+		v       Vector
+		want    float64
+		wantErr bool
+	}{
+		{
+			name:    "positive numbers",
+			v:       Vector{1, 2, 3},
+			want:    2,
+			wantErr: false,
+		},
+		{
+			name:    "includes negatives",
+			v:       Vector{1, -1, 4},
+			want:    1.333333333333333,
+			wantErr: false,
+		},
+		{
+			name:    "empty vector",
+			v:       Vector{},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name:    "single element",
+			v:       Vector{7},
+			want:    7,
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.v.Mean()
+
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("Mean() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if tt.wantErr {
+				return
+			}
+
+			if math.Abs(got-tt.want) > 1e-9 {
+				t.Errorf("Mean() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

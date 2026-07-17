@@ -103,3 +103,12 @@ func (v Vector) Sum() float64 {
 	}
 	return sum
 }
+
+// Mean returns the average of all elements in v.
+// It returns an error if v is empty.
+func (v Vector) Mean() (float64, error) {
+	if len(v) == 0 {
+		return 0, fmt.Errorf("mathrock: cannot compute mean of an empty vector")
+	}
+	return v.Sum() / float64(len(v)), nil
+}
