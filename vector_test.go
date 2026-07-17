@@ -461,3 +461,56 @@ func TestVectorMean(t *testing.T) {
 		})
 	}
 }
+
+func TestVectorMultiply(t *testing.T) {
+	tests := []struct {
+		name    string
+		a       Vector
+		b       Vector
+		want    Vector
+		wantErr bool
+	}{
+		{
+			name:    "equal length vectors",
+			a:       Vector{1, 2, 3},
+			b:       Vector{4, 5, 6},
+			want:    Vector{4, 10, 18},
+			wantErr: false,
+		},
+		{
+			name:    "mismatched length vectors",
+			a:       Vector{1, 2},
+			b:       Vector{1, 2, 3},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name:    "empty vectors",
+			a:       Vector{},
+			b:       Vector{},
+			want:    Vector{},
+			wantErr: false,
+		},
+		{
+			name:    "includes negative and zero",
+			a:       Vector{-2, 0, 3},
+			b:       Vector{5, 9, -1},
+			want:    Vector{-10, 0, -3},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.a.Multiply(tt.b)
+
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("Multiply() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Multiply() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

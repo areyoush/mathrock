@@ -112,3 +112,18 @@ func (v Vector) Mean() (float64, error) {
 	}
 	return v.Sum() / float64(len(v)), nil
 }
+
+// Multiply returns a new Vector that is the element-wise product of v and other.
+// It returns an error if the two vectors have different lengths.
+func (v Vector) Multiply(other Vector) (Vector, error) {
+	if len(v) != len(other) {
+		return nil, fmt.Errorf("mathrock: vectors must have equal length, got %d and %d", len(v), len(other))
+	}
+
+	result := make(Vector, len(v))
+	for i := range v {
+		result[i] = v[i] * other[i]
+	}
+
+	return result, nil
+}
