@@ -371,3 +371,41 @@ func TestVectorEquals(t *testing.T) {
 		})
 	}
 }
+
+func TestVectorSum(t *testing.T) {
+	tests := []struct {
+		name string
+		v    Vector
+		want float64
+	}{
+		{
+			name: "positive numbers",
+			v:    Vector{1, 2, 3},
+			want: 6,
+		},
+		{
+			name: "includes negatives",
+			v:    Vector{1, -2, 3},
+			want: 2,
+		},
+		{
+			name: "empty vector",
+			v:    Vector{},
+			want: 0,
+		},
+		{
+			name: "single element",
+			v:    Vector{5},
+			want: 5,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.v.Sum()
+			if got != tt.want {
+				t.Errorf("Sum() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

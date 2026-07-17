@@ -94,3 +94,12 @@ func (v Vector) EqualsWithTolerance(other Vector, tolerance float64) bool {
 func (v Vector) Equals(other Vector) bool {
 	return v.EqualsWithTolerance(other, 1e-9)
 }
+
+// Sum returns the sum of all values in v.
+func (v Vector) Sum() float64 {
+	var sum float64
+	for i := range v {
+		sum += v[i]
+	}
+	return sum
+}
