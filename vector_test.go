@@ -279,3 +279,95 @@ func TestVectorNormalize(t *testing.T) {
 		})
 	}
 }
+
+func TestVectorEqualsWithTolerance(t *testing.T) {
+	tests := []struct {
+		name      string
+		a         Vector
+		b         Vector
+		tolerance float64
+		want      bool
+	}{
+		{
+			name:      "identical vectors",
+			a:         Vector{1, 2, 3},
+			b:         Vector{1, 2, 3},
+			tolerance: 1e-9,
+			want:      true,
+		},
+		{
+			name:      "different vectors",
+			a:         Vector{1, 2, 3},
+			b:         Vector{1, 2, 4},
+			tolerance: 1e-9,
+			want:      false,
+		},
+		{
+			name:      "within tolerance",
+			a:         Vector{1, 2, 3},
+			b:         Vector{1.0001, 2, 3},
+			tolerance: 0.001,
+			want:      true,
+		},
+		{
+			name:      "outside tolerance",
+			a:         Vector{1, 2, 3},
+			b:         Vector{1.1, 2, 3},
+			tolerance: 0.001,
+			want:      false,
+		},
+		{
+			name:      "mismatched lengths",
+			a:         Vector{1, 2},
+			b:         Vector{1, 2, 3},
+			tolerance: 1e-9,
+			want:      false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.a.EqualsWithTolerance(tt.b, tt.tolerance)
+			if got != tt.want {
+				t.Errorf("EqualsWithTolerance() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestVectorEquals(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Vector
+		b    Vector
+		want bool
+	}{
+		{
+			name: "identical vectors",
+			a:    Vector{1, 2, 3},
+			b:    Vector{1, 2, 3},
+			want: true,
+		},
+		{
+			name: "different vectors",
+			a:    Vector{1, 2, 3},
+			b:    Vector{1, 2, 4},
+			want: false,
+		},
+		{
+			name: "floating point noise",
+			a:    Vector{0.6, 0.8},
+			b:    Vector{0.6000000000000001, 0.8},
+			want: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.a.Equals(tt.b)
+			if got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

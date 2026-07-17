@@ -75,3 +75,22 @@ func (v Vector) Normalize() (Vector, error) {
 	}
 	return v.Scale(1 / norm), nil
 }
+
+// EqualsWithTolerance reports whether v and other are equal, treating elements as equal if their differene is within tolerance.
+// Vectors of different lengths are never equal.
+func (v Vector) EqualsWithTolerance(other Vector, tolerance float64) bool {
+	if len(v) != len(other) {
+		return false
+	}
+	for i := range v {
+		if math.Abs(v[i]-other[i]) > tolerance {
+			return false
+		}
+	}
+	return true
+}
+
+// Equals reports whether v and the other are equal, using a small default tolerance to account for floating-point rounding error.
+func (v Vector) Equals(other Vector) bool {
+	return v.EqualsWithTolerance(other, 1e-9)
+}
