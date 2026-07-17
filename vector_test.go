@@ -514,3 +514,53 @@ func TestVectorMultiply(t *testing.T) {
 		})
 	}
 }
+
+func TestVectorDistance(t *testing.T) {
+	tests := []struct {
+		name    string
+		a       Vector
+		b       Vector
+		want    float64
+		wantErr bool
+	}{
+		{
+			name:    "3-4-5 triangle",
+			a:       Vector{0, 0},
+			b:       Vector{3, 4},
+			want:    5,
+			wantErr: false,
+		},
+		{
+			name:    "same vector",
+			a:       Vector{1, 2, 3},
+			b:       Vector{1, 2, 3},
+			want:    0,
+			wantErr: false,
+		},
+		{
+			name:    "mismatched lengths",
+			a:       Vector{1, 2},
+			b:       Vector{1, 2, 3},
+			want:    0,
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.a.Distance(tt.b)
+
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("Distance() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if tt.wantErr {
+				return
+			}
+
+			if math.Abs(got-tt.want) > 1e-9 {
+				t.Errorf("Distance() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

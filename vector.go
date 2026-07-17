@@ -127,3 +127,13 @@ func (v Vector) Multiply(other Vector) (Vector, error) {
 
 	return result, nil
 }
+
+// Distance returns the Euclidean distance between v and other.
+// It returns an error if the two vectors have different lengths.
+func (v Vector) Distance(other Vector) (float64, error) {
+	diff, err := v.Subtract(other)
+	if err != nil {
+		return 0, err
+	}
+	return diff.Norm(), nil
+}
