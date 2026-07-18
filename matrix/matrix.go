@@ -2,6 +2,7 @@ package mathrock
 
 import (
 	"fmt"
+	"strings"
 )
 
 // Matrix represents a 2D matrix of float64 values, stored internally as a flat slice in row-major order.
@@ -55,4 +56,49 @@ func (m Matrix) Row(row int) []float64 {
 		panic(fmt. Sprintf("mathrock: row index %d out of bounds for %dx%d matrix", row, m.rows, m.cols))
 	}
 	return m.data[row*m.cols : row*m.cols+m.cols]
+}
+
+// Add returns a new Matrix that is the element-wise sum of m and the other.
+// It panics if the two matrices do not have the same dimensions.
+func (m Matrix) Add(other Matrix) Matrix {
+	if m.rows != other.rows || m.cols != other.cols {
+		panic(fmt.Sprintf("mathrock: matrices must have the same dimensions, got %dx%d and %dx%d", m.rows, m.cols, other.rows, other.cols))
+	}
+
+	result := make([]float64, len(m.data))
+	for i := range m.data {
+		result[i] = m.data[i] + other.data[i]
+	}
+	return Matrix{data: result, rows: m.rows, cols: m.cols}
+}
+
+// Subtract returns a new Matrix that is the element-wise difference of m and the other.
+// It panics if the two matrices do not have the same dimensions.
+func (m Matrix) Subtract(other Matrix) Matrix {
+	if m.rows != other.rows || m.cols != other.cols {
+		panic(fmt.Sprintf("mathrock: matrices must have the same dimensions, got %dx%d and %dx%d", m.rows, m.cols, other.rows, other.cols))
+	}
+
+	result := make([]float64, len(m.data))
+	for i := range m.data {
+		result[i] = m.data[i] - other.data[i]
+	}
+	return Matrix{data: result, rows: m.rows, cols: m.cols}
+}
+
+
+
+
+
+
+
+
+// String returns a human-readable, row-by-row representation of the matrix.
+func (m Matrix) String() string {
+	var sb strings.Builder
+	for r := 0; r < m.rows; r++ {
+		sb.WriteString(fmt.Sprint(m.Row(r)))
+		sb.WriteString("\n")
+	}
+	return sb.String()
 }

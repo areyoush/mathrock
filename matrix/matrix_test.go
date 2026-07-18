@@ -321,3 +321,129 @@ func TestMatrixRow(t *testing.T) {
 		})
 	}
 }
+
+// TestMatrixAdd verifies element-wise Add on same-shape matrices and confirms it panics on mismatched dimensions.
+func TestMatrixAdd(t *testing.T) {
+	tests := []struct {
+		name       string
+		aRows      int
+		aCols      int
+		aData      []float64
+		bRows      int
+		bCols      int
+		bData      []float64
+		want       []float64
+		wantPanic  bool
+	}{
+		{
+			name:  "same shape matrices",
+			aRows: 2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows: 2, bCols: 2, bData: []float64{5, 6, 7, 8},
+			want: []float64{6, 8, 10, 12},
+		},
+		{
+			name:  "includes negatives",
+			aRows: 1, aCols: 3, aData: []float64{1, -2, 3},
+			bRows: 1, bCols: 3, bData: []float64{-1, 2, -3},
+			want: []float64{0, 0, 0},
+		},
+		{
+			name:      "mismatched rows",
+			aRows:     2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows:     3, bCols: 2, bData: []float64{1, 2, 3, 4, 5, 6},
+			wantPanic: true,
+		},
+		{
+			name:      "mismatched cols",
+			aRows:     2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows:     2, bCols: 3, bData: []float64{1, 2, 3, 4, 5, 6},
+			wantPanic: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, err := NewMatrix(tt.aRows, tt.aCols, tt.aData)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+			b, err := NewMatrix(tt.bRows, tt.bCols, tt.bData)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			if tt.wantPanic {
+				assertPanics(t, func() { a.Add(b) })
+				return
+			}
+
+			got := a.Add(b)
+			if !reflect.DeepEqual(got.data, tt.want) {
+				t.Errorf("Add() = %v, want %v", got.data, tt.want)
+			}
+		})
+	}
+}
+
+// TestMatrixSubtract verifies element-wise Subtract on same-shape matrices and confirms it panics on mismatched dimensions.
+func TestMatrixSubtract(t *testing.T) {
+	tests := []struct {
+		name      string
+		aRows     int
+		aCols     int
+		aData     []float64
+		bRows     int
+		bCols     int
+		bData     []float64
+		want      []float64
+		wantPanic bool
+	}{
+		{
+			name:  "same shape matrices",
+			aRows: 2, aCols: 2, aData: []float64{5, 6, 7, 8},
+			bRows: 2, bCols: 2, bData: []float64{1, 2, 3, 4},
+			want: []float64{4, 4, 4, 4},
+		},
+		{
+			name:  "result has negative values",
+			aRows: 1, aCols: 3, aData: []float64{1, 2, 3},
+			bRows: 1, bCols: 3, bData: []float64{4, 5, 6},
+			want: []float64{-3, -3, -3},
+		},
+		{
+			name:      "mismatched rows",
+			aRows:     2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows:     3, bCols: 2, bData: []float64{1, 2, 3, 4, 5, 6},
+			wantPanic: true,
+		},
+		{
+			name:      "mismatched cols",
+			aRows:     2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows:     2, bCols: 3, bData: []float64{1, 2, 3, 4, 5, 6},
+			wantPanic: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, err := NewMatrix(tt.aRows, tt.aCols, tt.aData)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+			b, err := NewMatrix(tt.bRows, tt.bCols, tt.bData)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			if tt.wantPanic {
+				assertPanics(t, func() { a.Subtract(b) })
+				return
+			}
+
+			got := a.Subtract(b)
+			if !reflect.DeepEqual(got.data, tt.want) {
+				t.Errorf("Subtract() = %v, want %v", got.data, tt.want)
+			}
+		})
+	}
+}
