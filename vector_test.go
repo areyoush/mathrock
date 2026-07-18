@@ -18,45 +18,53 @@ func vectorsApproxEqual(a, b Vector, tolerance float64) bool {
 	return true
 }
 
+// assertPanics runs fn and fails the test if it does not panic.
+func assertPanics(t *testing.T, fn func()) {
+	t.Helper()
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("expected panic, but function did not panic")
+		}
+	}()
+	fn()
+}
+
 func TestVectorDot(t *testing.T) {
 	tests := []struct {
-		name    string
-		a       Vector
-		b       Vector
-		want    float64
-		wantErr bool
+		name      string
+		a         Vector
+		b         Vector
+		want      float64
+		wantPanic bool
 	}{
 		{
-			name:    "equal length vectors",
-			a:       Vector{1, 2, 3},
-			b:       Vector{4, 5, 6},
-			want:    32,
-			wantErr: false,
+			name: "equal length vectors",
+			a:    Vector{1, 2, 3},
+			b:    Vector{4, 5, 6},
+			want: 32,
 		},
 		{
-			name:    "mismatched length vectors",
-			a:       Vector{1, 2},
-			b:       Vector{1, 2, 3},
-			want:    0,
-			wantErr: true,
+			name:      "mismatched length vectors",
+			a:         Vector{1, 2},
+			b:         Vector{1, 2, 3},
+			wantPanic: true,
 		},
 		{
-			name:    "empty vectors",
-			a:       Vector{},
-			b:       Vector{},
-			want:    0,
-			wantErr: false,
+			name: "empty vectors",
+			a:    Vector{},
+			b:    Vector{},
+			want: 0,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.a.Dot(tt.b)
-
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("Dot() error = %v, wantErr %v", err, tt.wantErr)
+			if tt.wantPanic {
+				assertPanics(t, func() { tt.a.Dot(tt.b) })
+				return
 			}
 
+			got := tt.a.Dot(tt.b)
 			if got != tt.want {
 				t.Errorf("Dot() = %v, want %v", got, tt.want)
 			}
@@ -66,43 +74,40 @@ func TestVectorDot(t *testing.T) {
 
 func TestVectorAdd(t *testing.T) {
 	tests := []struct {
-		name    string
-		a       Vector
-		b       Vector
-		want    Vector
-		wantErr bool
+		name      string
+		a         Vector
+		b         Vector
+		want      Vector
+		wantPanic bool
 	}{
 		{
-			name:    "equal length vectors",
-			a:       Vector{1, 2, 3},
-			b:       Vector{4, 5, 6},
-			want:    Vector{5, 7, 9},
-			wantErr: false,
+			name: "equal length vectors",
+			a:    Vector{1, 2, 3},
+			b:    Vector{4, 5, 6},
+			want: Vector{5, 7, 9},
 		},
 		{
-			name:    "mismatched length vectors",
-			a:       Vector{1, 2},
-			b:       Vector{1, 2, 3},
-			want:    nil,
-			wantErr: true,
+			name:      "mismatched length vectors",
+			a:         Vector{1, 2},
+			b:         Vector{1, 2, 3},
+			wantPanic: true,
 		},
 		{
-			name:    "empty vectors",
-			a:       Vector{},
-			b:       Vector{},
-			want:    Vector{},
-			wantErr: false,
+			name: "empty vectors",
+			a:    Vector{},
+			b:    Vector{},
+			want: Vector{},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.a.Add(tt.b)
-
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("Add() error = %v, wantErr %v", err, tt.wantErr)
+			if tt.wantPanic {
+				assertPanics(t, func() { tt.a.Add(tt.b) })
+				return
 			}
 
+			got := tt.a.Add(tt.b)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Add() = %v, want %v", got, tt.want)
 			}
@@ -112,50 +117,46 @@ func TestVectorAdd(t *testing.T) {
 
 func TestVectorSubtract(t *testing.T) {
 	tests := []struct {
-		name    string
-		a       Vector
-		b       Vector
-		want    Vector
-		wantErr bool
+		name      string
+		a         Vector
+		b         Vector
+		want      Vector
+		wantPanic bool
 	}{
 		{
-			name:    "equal length vectors",
-			a:       Vector{4, 5, 6},
-			b:       Vector{1, 2, 3},
-			want:    Vector{3, 3, 3},
-			wantErr: false,
+			name: "equal length vectors",
+			a:    Vector{4, 5, 6},
+			b:    Vector{1, 2, 3},
+			want: Vector{3, 3, 3},
 		},
 		{
-			name:    "mismatched length vectors",
-			a:       Vector{1, 2},
-			b:       Vector{1, 2, 3},
-			want:    nil,
-			wantErr: true,
+			name:      "mismatched length vectors",
+			a:         Vector{1, 2},
+			b:         Vector{1, 2, 3},
+			wantPanic: true,
 		},
 		{
-			name:    "empty vectors",
-			a:       Vector{},
-			b:       Vector{},
-			want:    Vector{},
-			wantErr: false,
+			name: "empty vectors",
+			a:    Vector{},
+			b:    Vector{},
+			want: Vector{},
 		},
 		{
-			name:    "result has negative values",
-			a:       Vector{1, 2, 3},
-			b:       Vector{4, 5, 6},
-			want:    Vector{-3, -3, -3},
-			wantErr: false,
+			name: "result has negative values",
+			a:    Vector{1, 2, 3},
+			b:    Vector{4, 5, 6},
+			want: Vector{-3, -3, -3},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.a.Subtract(tt.b)
-
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("Subtract() error = %v, wantErr %v", err, tt.wantErr)
+			if tt.wantPanic {
+				assertPanics(t, func() { tt.a.Subtract(tt.b) })
+				return
 			}
 
+			got := tt.a.Subtract(tt.b)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Subtract() = %v, want %v", got, tt.want)
 			}
@@ -464,50 +465,46 @@ func TestVectorMean(t *testing.T) {
 
 func TestVectorMultiply(t *testing.T) {
 	tests := []struct {
-		name    string
-		a       Vector
-		b       Vector
-		want    Vector
-		wantErr bool
+		name      string
+		a         Vector
+		b         Vector
+		want      Vector
+		wantPanic bool
 	}{
 		{
-			name:    "equal length vectors",
-			a:       Vector{1, 2, 3},
-			b:       Vector{4, 5, 6},
-			want:    Vector{4, 10, 18},
-			wantErr: false,
+			name: "equal length vectors",
+			a:    Vector{1, 2, 3},
+			b:    Vector{4, 5, 6},
+			want: Vector{4, 10, 18},
 		},
 		{
-			name:    "mismatched length vectors",
-			a:       Vector{1, 2},
-			b:       Vector{1, 2, 3},
-			want:    nil,
-			wantErr: true,
+			name:      "mismatched length vectors",
+			a:         Vector{1, 2},
+			b:         Vector{1, 2, 3},
+			wantPanic: true,
 		},
 		{
-			name:    "empty vectors",
-			a:       Vector{},
-			b:       Vector{},
-			want:    Vector{},
-			wantErr: false,
+			name: "empty vectors",
+			a:    Vector{},
+			b:    Vector{},
+			want: Vector{},
 		},
 		{
-			name:    "includes negative and zero",
-			a:       Vector{-2, 0, 3},
-			b:       Vector{5, 9, -1},
-			want:    Vector{-10, 0, -3},
-			wantErr: false,
+			name: "includes negative and zero",
+			a:    Vector{-2, 0, 3},
+			b:    Vector{5, 9, -1},
+			want: Vector{-10, 0, -3},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.a.Multiply(tt.b)
-
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("Multiply() error = %v, wantErr %v", err, tt.wantErr)
+			if tt.wantPanic {
+				assertPanics(t, func() { tt.a.Multiply(tt.b) })
+				return
 			}
 
+			got := tt.a.Multiply(tt.b)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Multiply() = %v, want %v", got, tt.want)
 			}
@@ -517,47 +514,40 @@ func TestVectorMultiply(t *testing.T) {
 
 func TestVectorDistance(t *testing.T) {
 	tests := []struct {
-		name    string
-		a       Vector
-		b       Vector
-		want    float64
-		wantErr bool
+		name      string
+		a         Vector
+		b         Vector
+		want      float64
+		wantPanic bool
 	}{
 		{
-			name:    "3-4-5 triangle",
-			a:       Vector{0, 0},
-			b:       Vector{3, 4},
-			want:    5,
-			wantErr: false,
+			name: "3-4-5 triangle",
+			a:    Vector{0, 0},
+			b:    Vector{3, 4},
+			want: 5,
 		},
 		{
-			name:    "same vector",
-			a:       Vector{1, 2, 3},
-			b:       Vector{1, 2, 3},
-			want:    0,
-			wantErr: false,
+			name: "same vector",
+			a:    Vector{1, 2, 3},
+			b:    Vector{1, 2, 3},
+			want: 0,
 		},
 		{
-			name:    "mismatched lengths",
-			a:       Vector{1, 2},
-			b:       Vector{1, 2, 3},
-			want:    0,
-			wantErr: true,
+			name:      "mismatched lengths",
+			a:         Vector{1, 2},
+			b:         Vector{1, 2, 3},
+			wantPanic: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.a.Distance(tt.b)
-
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("Distance() error = %v, wantErr %v", err, tt.wantErr)
-			}
-
-			if tt.wantErr {
+			if tt.wantPanic {
+				assertPanics(t, func() { tt.a.Distance(tt.b) })
 				return
 			}
 
+			got := tt.a.Distance(tt.b)
 			if math.Abs(got-tt.want) > 1e-9 {
 				t.Errorf("Distance() = %v, want %v", got, tt.want)
 			}
