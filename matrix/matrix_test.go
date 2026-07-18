@@ -447,3 +447,51 @@ func TestMatrixSubtract(t *testing.T) {
 		})
 	}
 }
+
+// TestMatrixScale verifies Scale multiplies every element by the given scalar.
+func TestMatrixScale(t *testing.T) {
+	tests := []struct {
+		name   string
+		rows   int
+		cols   int
+		data   []float64
+		scalar float64
+		want   []float64
+	}{
+		{
+			name:   "positive scalar",
+			rows:   2, cols: 2,
+			data:   []float64{1, 2, 3, 4},
+			scalar: 2,
+			want:   []float64{2, 4, 6, 8},
+		},
+		{
+			name:   "negative scalar",
+			rows:   1, cols: 3,
+			data:   []float64{1, 2, 3},
+			scalar: -1,
+			want:   []float64{-1, -2, -3},
+		},
+		{
+			name:   "zero scalar",
+			rows:   2, cols: 2,
+			data:   []float64{1, 2, 3, 4},
+			scalar: 0,
+			want:   []float64{0, 0, 0, 0},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m, err := NewMatrix(tt.rows, tt.cols, tt.data)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			got := m.Scale(tt.scalar)
+			if !reflect.DeepEqual(got.data, tt.want) {
+				t.Errorf("Scale() = %v, want %v", got.data, tt.want)
+			}
+		})
+	}
+}

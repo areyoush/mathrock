@@ -86,12 +86,14 @@ func (m Matrix) Subtract(other Matrix) Matrix {
 	return Matrix{data: result, rows: m.rows, cols: m.cols}
 }
 
-
-
-
-
-
-
+// Scale returns a new Matrix with every element multiplied by scalar.
+func (m Matrix) Scale(scalar float64) Matrix {
+	result := make([]float64, len(m.data))
+	for i := range m.data {
+		result[i] = m.data[i] * scalar
+	}
+	return Matrix{data: result, rows: m.rows, cols: m.cols}	
+}
 
 // String returns a human-readable, row-by-row representation of the matrix.
 func (m Matrix) String() string {
