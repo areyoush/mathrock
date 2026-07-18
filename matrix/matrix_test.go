@@ -1,6 +1,7 @@
 package mathrock
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -243,6 +244,79 @@ func TestMatrixSet(t *testing.T) {
 			got := m.At(tt.row, tt.col)
 			if got != tt.val {
 				t.Errorf("after Set(%d, %d, %v), At() = %v, want %v", tt.row, tt.col, tt.val, got, tt.val)
+			}
+		})
+	}
+}
+
+// TestMatrixRow verifies Row returns the correct slice of values for a given row and panics when row is out of bounds.
+func TestMatrixRow(t *testing.T) {
+	tests := []struct {
+		name      string
+		rows      int
+		cols      int
+		data      []float64
+		row       int
+		want      []float64
+		wantPanic bool
+	}{
+		{
+			name: "first row",
+			rows: 2,
+			cols: 3,
+			data: []float64{1, 2, 3, 4, 5, 6},
+			row:  0,
+			want: []float64{1, 2, 3},
+		},
+		{
+			name: "second row",
+			rows: 2,
+			cols: 3,
+			data: []float64{1, 2, 3, 4, 5, 6},
+			row:  1,
+			want: []float64{4, 5, 6},
+		},
+		{
+			name: "single column matrix",
+			rows: 3,
+			cols: 1,
+			data: []float64{7, 8, 9},
+			row:  1,
+			want: []float64{8},
+		},
+		{
+			name:      "row out of bounds negative",
+			rows:      2,
+			cols:      3,
+			data:      []float64{1, 2, 3, 4, 5, 6},
+			row:       -1,
+			wantPanic: true,
+		},
+		{
+			name:      "row out of bounds too large",
+			rows:      2,
+			cols:      3,
+			data:      []float64{1, 2, 3, 4, 5, 6},
+			row:       2,
+			wantPanic: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m, err := NewMatrix(tt.rows, tt.cols, tt.data)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			if tt.wantPanic {
+				assertPanics(t, func() { m.Row(tt.row) })
+				return
+			}
+
+			got := m.Row(tt.row)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Row(%d) = %v, want %v", tt.row, got, tt.want)
 			}
 		})
 	}

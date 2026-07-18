@@ -47,3 +47,12 @@ func (m Matrix) Set(row, col int, val float64) {
 	}
 	m.data[row*m.cols+col] = val	
 }
+
+// Row returns the values in the given row as a slice.
+// It panics if row is out of bounds for matrix's dimenstions.
+func (m Matrix) Row(row int) []float64 {
+	if row < 0 || row >= m.rows {
+		panic(fmt. Sprintf("mathrock: row index %d out of bounds for %dx%d matrix", row, m.rows, m.cols))
+	}
+	return m.data[row*m.cols : row*m.cols+m.cols]
+}
