@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// vectorsApproxEqual reports whether two vectors are equal within tolerance, used to compare floating-point results in tests.
 func vectorsApproxEqual(a, b Vector, tolerance float64) bool {
 	if len(a) != len(b) {
 		return false
@@ -29,6 +30,7 @@ func assertPanics(t *testing.T, fn func()) {
 	fn()
 }
 
+// TestVectorDot verifies Dot on equal-length vectors and confirms it panics on mismatched lengths.
 func TestVectorDot(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -72,6 +74,7 @@ func TestVectorDot(t *testing.T) {
 	}
 }
 
+// TestVectorAdd verifies Add on equal-length vectors and confirms it panics on mismatched lengths.
 func TestVectorAdd(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -115,6 +118,7 @@ func TestVectorAdd(t *testing.T) {
 	}
 }
 
+// TestVectorSubtract verifies Subtract on equal-length vectors, including negative results, and confirms it panics on mismatched lengths.
 func TestVectorSubtract(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -164,6 +168,7 @@ func TestVectorSubtract(t *testing.T) {
 	}
 }
 
+// TestVectorScale verifies Scale with positive, negative, zero, and empty vector inputs.
 func TestVectorScale(t *testing.T) {
 	tests := []struct {
 		name   string
@@ -208,6 +213,7 @@ func TestVectorScale(t *testing.T) {
 	}
 }
 
+// TestVectorNorm verifies Norm against known values, including the zero vector and single-element vectors.
 func TestVectorNorm(t *testing.T) {
 	tests := []struct {
 		name string
@@ -241,6 +247,7 @@ func TestVectorNorm(t *testing.T) {
 	}
 }
 
+// TestVectorNormalize verifies Normalize produces a unit vector and 	returns an error for the zero vector.
 func TestVectorNormalize(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -281,6 +288,7 @@ func TestVectorNormalize(t *testing.T) {
 	}
 }
 
+// TestVectorEqualsWithTolerance verifies equality checks at, within, and outside a given tolerance, including mismatched lengths.
 func TestVectorEqualsWithTolerance(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -336,6 +344,7 @@ func TestVectorEqualsWithTolerance(t *testing.T) {
 	}
 }
 
+// TestVectorEquals verifies Equals using the default tolerance, including floating-point rounding noise.
 func TestVectorEquals(t *testing.T) {
 	tests := []struct {
 		name string
@@ -373,6 +382,7 @@ func TestVectorEquals(t *testing.T) {
 	}
 }
 
+// TestVectorSum verifies Sum across positive, negative, empty, and single-element vectors.
 func TestVectorSum(t *testing.T) {
 	tests := []struct {
 		name string
@@ -411,6 +421,7 @@ func TestVectorSum(t *testing.T) {
 	}
 }
 
+// TestVectorMean verifies Mean across typical inputs and confirms it returns an error for an empty vector.
 func TestVectorMean(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -463,6 +474,7 @@ func TestVectorMean(t *testing.T) {
 	}
 }
 
+// TestVectorMultiply verifies element-wise Multiply and confirms it panics on mismatched lengths.
 func TestVectorMultiply(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -512,6 +524,7 @@ func TestVectorMultiply(t *testing.T) {
 	}
 }
 
+// TestVectorDistance verifies Distance against known geometric cases and confirms it panics on mismatched lengths.
 func TestVectorDistance(t *testing.T) {
 	tests := []struct {
 		name      string
