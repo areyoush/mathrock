@@ -574,3 +574,77 @@ func TestMatrixMatmul(t *testing.T) {
 		})
 	}
 }
+
+// TestMatrixTranspose verifies Transpose correctly swaps rows and columns.
+func TestMatrixTranspose(t *testing.T) {
+	tests := []struct {
+		name     string
+		rows     int
+		cols     int
+		data     []float64
+		wantRows int
+		wantCols int
+		want     []float64
+	}{
+		{
+			name:     "2x3 matrix",
+			rows:     2, cols: 3,
+			data:     []float64{1, 2, 3, 4, 5, 6},
+			wantRows: 3, wantCols: 2,
+			want:     []float64{1, 4, 2, 5, 3, 6},
+		},
+		{
+			name:     "square matrix",
+			rows:     2, cols: 2,
+			data:     []float64{1, 2, 3, 4},
+			wantRows: 2, wantCols: 2,
+			want:     []float64{1, 3, 2, 4},
+		},
+		{
+			name:     "single row",
+			rows:     1, cols: 3,
+			data:     []float64{1, 2, 3},
+			wantRows: 3, wantCols: 1,
+			want:     []float64{1, 2, 3},
+		},
+		{
+			name:     "single column",
+			rows:     3, cols: 1,
+			data:     []float64{1, 2, 3},
+			wantRows: 1, wantCols: 3,
+			want:     []float64{1, 2, 3},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m, err := NewMatrix(tt.rows, tt.cols, tt.data)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			got := m.Transpose()
+			if got.rows != tt.wantRows || got.cols != tt.wantCols {
+				t.Errorf("Transpose() shape = %dx%d, want %dx%d", got.rows, got.cols, tt.wantRows, tt.wantCols)
+			}
+			if !reflect.DeepEqual(got.data, tt.want) {
+				t.Errorf("Transpose() = %v, want %v", got.data, tt.want)
+			}
+		})
+	}
+}
+
+// TestMatrixT verifies T is a working alias for Transpose.
+func TestMatrixT(t *testing.T) {
+	m, err := NewMatrix(2, 3, []float64{1, 2, 3, 4, 5, 6})
+	if err != nil {
+		t.Fatalf("NewMatrix() unexpected error = %v", err)
+	}
+
+	got := m.T()
+	want := m.Transpose()
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("T() = %v, want %v", got, want)
+	}
+}

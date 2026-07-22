@@ -119,6 +119,23 @@ func (m Matrix) Matmul(other Matrix) Matrix {
 	return Matrix{data: result, rows: m.rows, cols: other.cols}
 }
 
+// Transpose returns a new Matrix with rows and columns swapped.
+func (m Matrix) Transpose() Matrix {
+	result := make([]float64, len(m.data))
+
+	for i := 0; i < m.rows; i++ {
+		for j := 0; j < m.cols; j++ {
+			result[j*m.rows+i] = m.data[i*m.cols+j]
+		}
+	}
+	return Matrix{data: result, rows: m.cols, cols: m.rows}
+}
+
+// T is a shorthand alias for Transpose.
+func (m Matrix) T() Matrix {
+	return m.Transpose()
+}
+
 // String returns a human-readable, row-by-row representation of the matrix.
 func (m Matrix) String() string {
 	var sb strings.Builder
