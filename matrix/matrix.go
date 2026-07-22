@@ -164,6 +164,21 @@ func (m Matrix) EqualsWithTolerance(other Matrix, tolerance float64) bool {
 	return true
 }
 
+// Equals reports whether m and other are equal, using a small default tolerance to account for floating-point rounding error.
+func (m Matrix) Equals(other Matrix) bool {
+	return m.EqualsWithTolerance(other, 1e-9)
+}
+
+// Rows returns the number of rows in the matrix.
+func (m Matrix) Rows() int {
+	return m.rows
+}
+
+// Cols returns the number of columns in the matrix.
+func (m Matrix) Cols() int {
+	return m.cols
+}
+
 // String returns a human-readable, row-by-row representation of the matrix.
 func (m Matrix) String() string {
 	var sb strings.Builder

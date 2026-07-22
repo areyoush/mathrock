@@ -791,3 +791,148 @@ func TestMatrixEqualsWithTolerance(t *testing.T) {
 		})
 	}
 }
+
+// TestMatrixEquals verifies Equals using the default tolerance, including floating-point rounding noise and mismatched dimensions.
+func TestMatrixEquals(t *testing.T) {
+	tests := []struct {
+		name  string
+		aRows int
+		aCols int
+		aData []float64
+		bRows int
+		bCols int
+		bData []float64
+		want  bool
+	}{
+		{
+			name:  "identical matrices",
+			aRows: 2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows: 2, bCols: 2, bData: []float64{1, 2, 3, 4},
+			want:  true,
+		},
+		{
+			name:  "different values",
+			aRows: 2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows: 2, bCols: 2, bData: []float64{1, 2, 3, 5},
+			want:  false,
+		},
+		{
+			name:  "floating point noise",
+			aRows: 1, aCols: 2, aData: []float64{0.6, 0.8},
+			bRows: 1, bCols: 2, bData: []float64{0.6000000000000001, 0.8},
+			want:  true,
+		},
+		{
+			name:  "mismatched dimensions",
+			aRows: 2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows: 4, bCols: 1, bData: []float64{1, 2, 3, 4},
+			want:  false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, err := NewMatrix(tt.aRows, tt.aCols, tt.aData)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+			b, err := NewMatrix(tt.bRows, tt.bCols, tt.bData)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			got := a.Equals(b)
+			if got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// TestMatrixRows verifies Rows returns the correct row count.
+func TestMatrixRows(t *testing.T) {
+	tests := []struct {
+		name string
+		rows int
+		cols int
+		data []float64
+		want int
+	}{
+		{
+			name: "2x3 matrix",
+			rows: 2, cols: 3,
+			data: []float64{1, 2, 3, 4, 5, 6},
+			want: 2,
+		},
+		{
+			name: "single row",
+			rows: 1, cols: 4,
+			data: []float64{1, 2, 3, 4},
+			want: 1,
+		},
+		{
+			name: "square matrix",
+			rows: 3, cols: 3,
+			data: []float64{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			want: 3,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m, err := NewMatrix(tt.rows, tt.cols, tt.data)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			got := m.Rows()
+			if got != tt.want {
+				t.Errorf("Rows() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// TestMatrixCols verifies Cols returns the correct column count.
+func TestMatrixCols(t *testing.T) {
+	tests := []struct {
+		name string
+		rows int
+		cols int
+		data []float64
+		want int
+	}{
+		{
+			name: "2x3 matrix",
+			rows: 2, cols: 3,
+			data: []float64{1, 2, 3, 4, 5, 6},
+			want: 3,
+		},
+		{
+			name: "single column",
+			rows: 4, cols: 1,
+			data: []float64{1, 2, 3, 4},
+			want: 1,
+		},
+		{
+			name: "square matrix",
+			rows: 3, cols: 3,
+			data: []float64{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			want: 3,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m, err := NewMatrix(tt.rows, tt.cols, tt.data)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			got := m.Cols()
+			if got != tt.want {
+				t.Errorf("Cols() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
