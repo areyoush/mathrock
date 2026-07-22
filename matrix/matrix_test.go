@@ -322,6 +322,74 @@ func TestMatrixRow(t *testing.T) {
 	}
 }
 
+// TestMatrixColumn verifies Column returns the correct slice of values for a given column and panics when col is out of bounds.
+func TestMatrixColumn(t *testing.T) {
+	tests := []struct {
+		name      string
+		rows      int
+		cols      int
+		data      []float64
+		col       int
+		want      []float64
+		wantPanic bool
+	}{
+		{
+			name: "first column",
+			rows: 2, cols: 3,
+			data: []float64{1, 2, 3, 4, 5, 6},
+			col:  0,
+			want: []float64{1, 4},
+		},
+		{
+			name: "last column",
+			rows: 2, cols: 3,
+			data: []float64{1, 2, 3, 4, 5, 6},
+			col:  2,
+			want: []float64{3, 6},
+		},
+		{
+			name: "single row matrix",
+			rows: 1, cols: 3,
+			data: []float64{7, 8, 9},
+			col:  1,
+			want: []float64{8},
+		},
+		{
+			name:      "col out of bounds negative",
+			rows:      2, cols: 3,
+			data:      []float64{1, 2, 3, 4, 5, 6},
+			col:       -1,
+			wantPanic: true,
+		},
+		{
+			name:      "col out of bounds too large",
+			rows:      2, cols: 3,
+			data:      []float64{1, 2, 3, 4, 5, 6},
+			col:       3,
+			wantPanic: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m, err := NewMatrix(tt.rows, tt.cols, tt.data)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			if tt.wantPanic {
+				assertPanics(t, func() { m.Column(tt.col) })
+				return
+			}
+
+			got := m.Column(tt.col)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Column(%d) = %v, want %v", tt.col, got, tt.want)
+			}
+		})
+	}
+}
+
 // TestMatrixAdd verifies element-wise Add on same-shape matrices and confirms it panics on mismatched dimensions.
 func TestMatrixAdd(t *testing.T) {
 	tests := []struct {
@@ -496,8 +564,7 @@ func TestMatrixScale(t *testing.T) {
 	}
 }
 
-// TestMatrixMatmul verifies matrix multiplication produces the correct
-// product and panics when m's columns don't match other's rows.
+// TestMatrixMatmul verifies matrix multiplication produces the correct product and panics when m's columns don't match other's rows.
 func TestMatrixMatmul(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -646,5 +713,81 @@ func TestMatrixT(t *testing.T) {
 
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("T() = %v, want %v", got, want)
+	}
+}
+
+// TestMatrixEqualsWithTolerance verifies equality checks at, within, and outside a given tolerance, including mismatched dimensions.
+func TestMatrixEqualsWithTolerance(t *testing.T) {
+	tests := []struct {
+		name      string
+		aRows     int
+		aCols     int
+		aData     []float64
+		bRows     int
+		bCols     int
+		bData     []float64
+		tolerance float64
+		want      bool
+	}{
+		{
+			name:      "identical matrices",
+			aRows:     2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows:     2, bCols: 2, bData: []float64{1, 2, 3, 4},
+			tolerance: 1e-9,
+			want:      true,
+		},
+		{
+			name:      "different values",
+			aRows:     2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows:     2, bCols: 2, bData: []float64{1, 2, 3, 5},
+			tolerance: 1e-9,
+			want:      false,
+		},
+		{
+			name:      "within tolerance",
+			aRows:     1, aCols: 3, aData: []float64{1, 2, 3},
+			bRows:     1, bCols: 3, bData: []float64{1.0001, 2, 3},
+			tolerance: 0.001,
+			want:      true,
+		},
+		{
+			name:      "outside tolerance",
+			aRows:     1, aCols: 3, aData: []float64{1, 2, 3},
+			bRows:     1, bCols: 3, bData: []float64{1.1, 2, 3},
+			tolerance: 0.001,
+			want:      false,
+		},
+		{
+			name:      "mismatched rows",
+			aRows:     2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows:     4, bCols: 1, bData: []float64{1, 2, 3, 4},
+			tolerance: 1e-9,
+			want:      false,
+		},
+		{
+			name:      "mismatched cols",
+			aRows:     2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows:     2, bCols: 3, bData: []float64{1, 2, 3, 4, 5, 6},
+			tolerance: 1e-9,
+			want:      false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, err := NewMatrix(tt.aRows, tt.aCols, tt.aData)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+			b, err := NewMatrix(tt.bRows, tt.bCols, tt.bData)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			got := a.EqualsWithTolerance(b, tt.tolerance)
+			if got != tt.want {
+				t.Errorf("EqualsWithTolerance() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

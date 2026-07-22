@@ -2,6 +2,7 @@ package mathrock
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -56,6 +57,19 @@ func (m Matrix) Row(row int) []float64 {
 		panic(fmt. Sprintf("mathrock: row index %d out of bounds for %dx%d matrix", row, m.rows, m.cols))
 	}
 	return m.data[row*m.cols : row*m.cols+m.cols]
+}
+
+// Column returns the values in the given column as a new slice.
+// It panics if col is out of bounds for the matrix's dimensions.
+func (m Matrix) Column(col int) []float64 {
+	if col < 0 || col >= m.cols {
+		panic(fmt.Sprintf("mathrock: col index %d out of bounds for %dx%d matrix", col, m.rows, m.cols))
+	}
+	result := make([]float64, m.rows)
+	for i := 0; i < m.rows; i++ {
+		result[i] = m.data[i*m.cols+col]
+	}
+	return result
 }
 
 // Add returns a new Matrix that is the element-wise sum of m and the other.
@@ -134,6 +148,20 @@ func (m Matrix) Transpose() Matrix {
 // T is a shorthand alias for Transpose.
 func (m Matrix) T() Matrix {
 	return m.Transpose()
+}
+
+// EqualsWithTolerance reports whether m and other are equal, treating elements as equal if their difference is within tolerance.
+// Matrices of different dimensions are never equal.
+func (m Matrix) EqualsWithTolerance(other Matrix, tolerance float64) bool {
+	if m.rows != other.rows || m.cols != other.cols {
+		return false
+	}
+	for i := range m.data {
+		if math.Abs(m.data[i]-other.data[i]) > tolerance {
+			return false
+		}
+	}
+	return true
 }
 
 // String returns a human-readable, row-by-row representation of the matrix.
