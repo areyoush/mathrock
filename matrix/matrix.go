@@ -92,7 +92,31 @@ func (m Matrix) Scale(scalar float64) Matrix {
 	for i := range m.data {
 		result[i] = m.data[i] * scalar
 	}
-	return Matrix{data: result, rows: m.rows, cols: m.cols}	
+	return Matrix{data: result, rows: m.rows, cols: m.cols}
+}
+
+// Matmul (Naive) returns a new Matrix that is the product of m and the other (m * other).
+// It panics if m's column count does not match other's row count.
+func (m Matrix) Matmul(other Matrix) Matrix {
+	if m.cols != other.rows {
+		panic(fmt.Sprintf("mathrock: cannot multiply %d%d matrix by %d%d matrix, m.cols must equal other.rows", m.rows, m.cols, other.rows, other.cols))
+	}
+
+	result := make([]float64, m.rows*other.cols)
+
+	for i := 0; i < m.rows; i++ {
+		for k := 0; k < m.cols; k++ {
+			mik := m.data[i*m.cols+k]
+			if mik == 0 {
+				continue
+			}
+			for j := 0; j < other.cols; j++ {
+				result[i*other.cols+j] += mik * other.data[k*other.cols+j]
+			}
+		}
+	}
+	
+	return Matrix{data: result, rows: m.rows, cols: other.cols}
 }
 
 // String returns a human-readable, row-by-row representation of the matrix.

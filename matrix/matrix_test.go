@@ -495,3 +495,82 @@ func TestMatrixScale(t *testing.T) {
 		})
 	}
 }
+
+// TestMatrixMatmul verifies matrix multiplication produces the correct
+// product and panics when m's columns don't match other's rows.
+func TestMatrixMatmul(t *testing.T) {
+	tests := []struct {
+		name      string
+		aRows     int
+		aCols     int
+		aData     []float64
+		bRows     int
+		bCols     int
+		bData     []float64
+		wantRows  int
+		wantCols  int
+		want      []float64
+		wantPanic bool
+	}{
+		{
+			name:     "2x3 times 3x2",
+			aRows:    2, aCols: 3, aData: []float64{1, 2, 3, 4, 5, 6},
+			bRows:    3, bCols: 2, bData: []float64{7, 8, 9, 10, 11, 12},
+			wantRows: 2, wantCols: 2,
+			want:     []float64{58, 64, 139, 154},
+		},
+		{
+			name:     "identity matrix",
+			aRows:    2, aCols: 2, aData: []float64{1, 2, 3, 4},
+			bRows:    2, bCols: 2, bData: []float64{1, 0, 0, 1},
+			wantRows: 2, wantCols: 2,
+			want:     []float64{1, 2, 3, 4},
+		},
+		{
+			name:     "row vector times column vector",
+			aRows:    1, aCols: 3, aData: []float64{1, 2, 3},
+			bRows:    3, bCols: 1, bData: []float64{4, 5, 6},
+			wantRows: 1, wantCols: 1,
+			want:     []float64{32},
+		},
+		{
+			name:     "matrix with zero elements",
+			aRows:    2, aCols: 2, aData: []float64{0, 0, 0, 0},
+			bRows:    2, bCols: 2, bData: []float64{1, 2, 3, 4},
+			wantRows: 2, wantCols: 2,
+			want:     []float64{0, 0, 0, 0},
+		},
+		{
+			name:      "mismatched dimensions",
+			aRows:     2, aCols: 3, aData: []float64{1, 2, 3, 4, 5, 6},
+			bRows:     2, bCols: 2, bData: []float64{1, 2, 3, 4},
+			wantPanic: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, err := NewMatrix(tt.aRows, tt.aCols, tt.aData)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+			b, err := NewMatrix(tt.bRows, tt.bCols, tt.bData)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			if tt.wantPanic {
+				assertPanics(t, func() { a.Matmul(b) })
+				return
+			}
+
+			got := a.Matmul(b)
+			if got.rows != tt.wantRows || got.cols != tt.wantCols {
+				t.Errorf("Matmul() shape = %dx%d, want %dx%d", got.rows, got.cols, tt.wantRows, tt.wantCols)
+			}
+			if !reflect.DeepEqual(got.data, tt.want) {
+				t.Errorf("Matmul() = %v, want %v", got.data, tt.want)
+			}
+		})
+	}
+}
