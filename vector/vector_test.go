@@ -1,4 +1,4 @@
-package mathrock
+package vector
 
 import (
 	"math"

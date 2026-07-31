@@ -1,4 +1,4 @@
-package mathrock
+package matrix
 
 import (
 	"reflect"
@@ -932,6 +932,63 @@ func TestMatrixCols(t *testing.T) {
 			got := m.Cols()
 			if got != tt.want {
 				t.Errorf("Cols() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// TestIdentity verifies Identity produces a matrix with 1s on the diagonal and 0s elsewhere, and panics for non-positive n.
+func TestIdentity(t *testing.T) {
+	tests := []struct {
+		name      string
+		n         int
+		want      []float64
+		wantPanic bool
+	}{
+		{
+			name: "3x3 identity",
+			n:    3,
+			want: []float64{
+				1, 0, 0,
+				0, 1, 0,
+				0, 0, 1,
+			},
+		},
+		{
+			name: "1x1 identity",
+			n:    1,
+			want: []float64{1},
+		},
+		{
+			name: "2x2 identity",
+			n:    2,
+			want: []float64{1, 0, 0, 1},
+		},
+		{
+			name:      "zero size panics",
+			n:         0,
+			wantPanic: true,
+		},
+		{
+			name:      "negative size panics",
+			n:         -2,
+			wantPanic: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantPanic {
+				assertPanics(t, func() { Identity(tt.n) })
+				return
+			}
+
+			got := Identity(tt.n)
+			if got.rows != tt.n || got.cols != tt.n {
+				t.Errorf("Identity(%d) shape = %dx%d, want %dx%d", tt.n, got.rows, got.cols, tt.n, tt.n)
+			}
+			if !reflect.DeepEqual(got.data, tt.want) {
+				t.Errorf("Identity(%d) = %v, want %v", tt.n, got.data, tt.want)
 			}
 		})
 	}

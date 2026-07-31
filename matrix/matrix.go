@@ -1,4 +1,4 @@
-package mathrock
+package matrix
 
 import (
 	"fmt"
@@ -187,4 +187,17 @@ func (m Matrix) String() string {
 		sb.WriteString("\n")
 	}
 	return sb.String()
+}
+
+// Identity returns a new n x n identity matrix, with 1s on the diagonal and 0s elsewhere.
+// It panics if n is less than or equal to 0. 
+func Identity(n int) Matrix {
+	if n <= 0 {
+		panic(fmt.Sprintf("mathrock: identity matrix size must be positive, got %d", n))
+	}
+	data := make([]float64, n*n)
+	for i := range n {
+		data[i*n+i] = 1
+	}
+	return Matrix{data: data, rows: n, cols: n}
 }
