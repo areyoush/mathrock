@@ -1,6 +1,15 @@
-# mathrock
+<p align="center">
+  <img src="assets/logo.jpeg" width="800" alt="mathrock logo">
+</p>
 
-A small math library for Go, providing `Vector` and `Matrix` types with common linear algebra operations.
+<p align="center">
+  <a href="https://pkg.go.dev/github.com/areyoush/mathrock"><img src="https://pkg.go.dev/badge/github.com/areyoush/mathrock.svg" alt="Go Reference"></a>
+  <a href="https://github.com/areyoush/mathrock/blob/main/LICENSE"><img src="https://img.shields.io/github/license/areyoush/mathrock" alt="License"></a>
+</p>
+
+<h1 align="left">mathrock</h1>
+
+<p align="left">A small math library for Go, providing <code>Vector</code> and <code>Matrix</code> types with common linear algebra operations.</p>
 
 ---
 
