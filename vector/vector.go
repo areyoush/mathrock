@@ -141,3 +141,18 @@ func (v Vector) Max() float64 {
 	}
 	return max
 }
+
+// Min returns the smallest value in v.
+// It panics if v is empty.
+func (v Vector) Min() float64 {
+	if len(v) == 0 {
+		panic("mathrock: cannot find the min of an empety vector")
+	}
+	min := v[0]
+	for _, val := range v[1:] {
+		if val < min {
+			min = val
+		}
+	}
+	return min
+}

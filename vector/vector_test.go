@@ -568,8 +568,7 @@ func TestVectorDistance(t *testing.T) {
 	}
 }
 
-// TestVectorMax verifies Max returns the largest value in v and panics on
-// an empty vector.
+// TestVectorMax verifies Max returns the largest value in v and panics on an empty vector.
 func TestVectorMax(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -619,6 +618,61 @@ func TestVectorMax(t *testing.T) {
 			got := tt.v.Max()
 			if got != tt.want {
 				t.Errorf("Max() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// TestVectorMin verifies Min returns the smallest value in v and panics on an empty vector.
+func TestVectorMin(t *testing.T) {
+	tests := []struct {
+		name      string
+		v         Vector
+		want      float64
+		wantPanic bool
+	}{
+		{
+			name: "positive numbers",
+			v:    Vector{1, 5, 3},
+			want: 1,
+		},
+		{
+			name: "includes negatives",
+			v:    Vector{-1, -5, -3},
+			want: -5,
+		},
+		{
+			name: "min at start",
+			v:    Vector{1, 9, 3},
+			want: 1,
+		},
+		{
+			name: "min at end",
+			v:    Vector{9, 2, 1},
+			want: 1,
+		},
+		{
+			name: "single element",
+			v:    Vector{7},
+			want: 7,
+		},
+		{
+			name:      "empty vector panics",
+			v:         Vector{},
+			wantPanic: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantPanic {
+				assertPanics(t, func() { tt.v.Min() })
+				return
+			}
+
+			got := tt.v.Min()
+			if got != tt.want {
+				t.Errorf("Min() = %v, want %v", got, tt.want)
 			}
 		})
 	}
