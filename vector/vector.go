@@ -126,3 +126,18 @@ func (v Vector) Multiply(other Vector) Vector {
 func (v Vector) Distance(other Vector) float64 {
 	return v.Subtract(other).Norm()
 }
+
+// Max returns the largest value in v.
+// It panics if v is empty.
+func (v Vector) Max() float64 {
+	if len(v) == 0 {
+		panic("mathrock: cannot find max of an empty vector")
+	}
+	max := v[0]
+	for _, val := range v[1:] {
+		if val > max {
+			max = val
+		}
+	}
+	return max
+}

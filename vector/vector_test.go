@@ -567,3 +567,59 @@ func TestVectorDistance(t *testing.T) {
 		})
 	}
 }
+
+// TestVectorMax verifies Max returns the largest value in v and panics on
+// an empty vector.
+func TestVectorMax(t *testing.T) {
+	tests := []struct {
+		name      string
+		v         Vector
+		want      float64
+		wantPanic bool
+	}{
+		{
+			name: "positive numbers",
+			v:    Vector{1, 5, 3},
+			want: 5,
+		},
+		{
+			name: "includes negatives",
+			v:    Vector{-1, -5, -3},
+			want: -1,
+		},
+		{
+			name: "max at start",
+			v:    Vector{9, 2, 3},
+			want: 9,
+		},
+		{
+			name: "max at end",
+			v:    Vector{1, 2, 9},
+			want: 9,
+		},
+		{
+			name: "single element",
+			v:    Vector{7},
+			want: 7,
+		},
+		{
+			name:      "empty vector panics",
+			v:         Vector{},
+			wantPanic: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantPanic {
+				assertPanics(t, func() { tt.v.Max() })
+				return
+			}
+
+			got := tt.v.Max()
+			if got != tt.want {
+				t.Errorf("Max() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
