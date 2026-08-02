@@ -201,3 +201,13 @@ func Identity(n int) Matrix {
 	}
 	return Matrix{data: data, rows: n, cols: n}
 }
+
+// Zeros returns a new Matrix with elements set to 0. 
+// It panics if rows or cols is less than or equal to 0.
+func Zeros(rows, cols int) Matrix {
+	if rows <= 0 || cols <= 0 {
+		panic(fmt.Sprintf("mathrock: matrix dimensions must be positive, got %dx%d", rows, cols))
+	}
+	data := make([]float64, rows*cols)
+	return Matrix{data: data, rows: rows, cols: cols}
+}

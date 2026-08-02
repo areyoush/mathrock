@@ -993,3 +993,66 @@ func TestIdentity(t *testing.T) {
 		})
 	}
 }
+
+// TestZeros verifies Zeros produces a matrix of the correct shape filled with zeros, and panics for non-positive dimensions.
+func TestZeros(t *testing.T) {
+	tests := []struct {
+		name      string
+		rows      int
+		cols      int
+		wantPanic bool
+	}{
+		{
+			name: "2x3 zeros",
+			rows: 2,
+			cols: 3,
+		},
+		{
+			name: "1x1 zeros",
+			rows: 1,
+			cols: 1,
+		},
+		{
+			name: "square zeros",
+			rows: 3,
+			cols: 3,
+		},
+		{
+			name:      "zero rows panics",
+			rows:      0,
+			cols:      3,
+			wantPanic: true,
+		},
+		{
+			name:      "zero cols panics",
+			rows:      3,
+			cols:      0,
+			wantPanic: true,
+		},
+		{
+			name:      "negative rows panics",
+			rows:      -2,
+			cols:      3,
+			wantPanic: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantPanic {
+				assertPanics(t, func() { Zeros(tt.rows, tt.cols) })
+				return
+			}
+
+			got := Zeros(tt.rows, tt.cols)
+			if got.rows != tt.rows || got.cols != tt.cols {
+				t.Errorf("Zeros(%d, %d) shape = %dx%d, want %dx%d", tt.rows, tt.cols, got.rows, got.cols, tt.rows, tt.cols)
+			}
+			for i, v := range got.data {
+				if v != 0 {
+					t.Errorf("Zeros(%d, %d) data[%d] = %v, want 0", tt.rows, tt.cols, i, v)
+				}
+			}
+		})
+	}
+}
