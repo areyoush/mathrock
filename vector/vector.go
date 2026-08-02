@@ -156,3 +156,13 @@ func (v Vector) Min() float64 {
 	}
 	return min
 }
+
+// Abs returns a new Vector with the absolute value of every element in v.
+func (v Vector) Abs() Vector {
+	result := make(Vector, len(v))
+	for i := range v {
+		result[i] = math.Abs(v[i])
+	}
+	return result
+}
+

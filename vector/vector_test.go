@@ -677,3 +677,47 @@ func TestVectorMin(t *testing.T) {
 		})
 	}
 }
+
+// TestVectorAbs verifies Abs returns a new Vector with the absolute value of every element.
+func TestVectorAbs(t *testing.T) {
+	tests := []struct {
+		name string
+		v    Vector
+		want Vector
+	}{
+		{
+			name: "all positive",
+			v:    Vector{1, 2, 3},
+			want: Vector{1, 2, 3},
+		},
+		{
+			name: "all negative",
+			v:    Vector{-1, -2, -3},
+			want: Vector{1, 2, 3},
+		},
+		{
+			name: "mixed signs",
+			v:    Vector{-5, 3, -2, 0},
+			want: Vector{5, 3, 2, 0},
+		},
+		{
+			name: "empty vector",
+			v:    Vector{},
+			want: Vector{},
+		},
+		{
+			name: "single negative element",
+			v:    Vector{-7},
+			want: Vector{7},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.v.Abs()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Abs() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
