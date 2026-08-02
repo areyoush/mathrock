@@ -721,3 +721,58 @@ func TestVectorAbs(t *testing.T) {
 		})
 	}
 }
+
+// TestVectorApply verifies Apply correctly transforms every element using the provided function.
+func TestVectorApply(t *testing.T) {
+	tests := []struct {
+		name string
+		v    Vector
+		fn   func(float64) float64
+		want Vector
+	}{
+		{
+			name: "square each element",
+			v:    Vector{1, 2, 3},
+			fn:   func(x float64) float64 { return x * x },
+			want: Vector{1, 4, 9},
+		},
+		{
+			name: "double each element",
+			v:    Vector{1, -2, 3},
+			fn:   func(x float64) float64 { return x * 2 },
+			want: Vector{2, -4, 6},
+		},
+		{
+			name: "relu-style clamp",
+			v:    Vector{-2, 3, -1, 5},
+			fn: func(x float64) float64 {
+				if x < 0 {
+					return 0
+				}
+				return x
+			},
+			want: Vector{0, 3, 0, 5},
+		},
+		{
+			name: "constant function",
+			v:    Vector{1, 2, 3},
+			fn:   func(x float64) float64 { return 9 },
+			want: Vector{9, 9, 9},
+		},
+		{
+			name: "empty vector",
+			v:    Vector{},
+			fn:   func(x float64) float64 { return x * 2 },
+			want: Vector{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.v.Apply(tt.fn)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Apply() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

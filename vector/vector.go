@@ -166,3 +166,11 @@ func (v Vector) Abs() Vector {
 	return result
 }
 
+// Apply returns a new Vector with a fn applied to every element of v.
+func (v Vector) Apply(fn func(float64) float64) Vector {
+	result := make(Vector, len(v))
+	for i := range v {
+		result[i] = fn(v[i])
+	}
+	return result
+}
