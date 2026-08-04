@@ -1295,3 +1295,66 @@ func TestMatrixIsSquare(t *testing.T) {
 		})
 	}
 }
+
+// TestMatrixApply verifies Apply correctly transforms every element using the provided function.
+func TestMatrixApply(t *testing.T) {
+	tests := []struct {
+		name string
+		rows int
+		cols int
+		data []float64
+		fn   func(float64) float64
+		want []float64
+	}{
+		{
+			name: "square each element",
+			rows: 2, cols: 2,
+			data: []float64{1, 2, 3, 4},
+			fn:   func(x float64) float64 { return x * x },
+			want: []float64{1, 4, 9, 16},
+		},
+		{
+			name: "double each element",
+			rows: 1, cols: 3,
+			data: []float64{1, -2, 3},
+			fn:   func(x float64) float64 { return x * 2 },
+			want: []float64{2, -4, 6},
+		},
+		{
+			name: "relu-style clamp",
+			rows: 2, cols: 2,
+			data: []float64{-2, 3, -1, 5},
+			fn: func(x float64) float64 {
+				if x < 0 {
+					return 0
+				}
+				return x
+			},
+			want: []float64{0, 3, 0, 5},
+		},
+		{
+			name: "constant function",
+			rows: 2, cols: 2,
+			data: []float64{1, 2, 3, 4},
+			fn:   func(x float64) float64 { return 9 },
+			want: []float64{9, 9, 9, 9},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m, err := NewMatrix(tt.rows, tt.cols, tt.data)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			got := m.Apply(tt.fn)
+			if !reflect.DeepEqual(got.data, tt.want) {
+				t.Errorf("Apply() = %v, want %v", got.data, tt.want)
+			}
+			if got.rows != tt.rows || got.cols != tt.cols {
+				t.Errorf("Apply() shape = %dx%d, want %dx%d", got.rows, got.cols, tt.rows, tt.cols)
+			}
+		})
+	}
+}

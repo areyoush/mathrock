@@ -257,3 +257,12 @@ func (m Matrix) Diagonal() vector.Vector {
 func (m Matrix) IsSquare() bool {
 	return m.rows == m.cols 
 }
+
+// Apply returns a new Matrix with a fn applied to every element of v.
+func (m Matrix) Apply(fn func(float64) float64) Matrix {
+	result := make([]float64, len(m.data))
+	for i := range m.data {
+		result[i] = fn(m.data[i])
+	}
+	return Matrix{data: result, rows: m.rows, cols: m.cols}
+}
