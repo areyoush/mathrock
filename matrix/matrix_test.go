@@ -1245,3 +1245,53 @@ func TestMatrixDiagonal(t *testing.T) {
 		})
 	}
 }
+
+// TestMatrixIsSquare verifies IsSquare correctly identifies square and non-square matrices.
+func TestMatrixIsSquare(t *testing.T) {
+	tests := []struct {
+		name string
+		rows int
+		cols int
+		data []float64
+		want bool
+	}{
+		{
+			name: "square matrix",
+			rows: 3, cols: 3,
+			data: []float64{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			want: true,
+		},
+		{
+			name: "1x1 matrix",
+			rows: 1, cols: 1,
+			data: []float64{5},
+			want: true,
+		},
+		{
+			name: "more rows than cols",
+			rows: 3, cols: 2,
+			data: []float64{1, 2, 3, 4, 5, 6},
+			want: false,
+		},
+		{
+			name: "more cols than rows",
+			rows: 2, cols: 3,
+			data: []float64{1, 2, 3, 4, 5, 6},
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m, err := NewMatrix(tt.rows, tt.cols, tt.data)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			got := m.IsSquare()
+			if got != tt.want {
+				t.Errorf("IsSquare() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -252,3 +252,8 @@ func (m Matrix) Diagonal() vector.Vector {
 	}
 	return result
 }
+
+// IsSquare reports whether m has an equal number of rows and columns.
+func (m Matrix) IsSquare() bool {
+	return m.rows == m.cols 
+}
