@@ -224,3 +224,16 @@ func Ones(rows, cols int) Matrix {
 	} 
 	return Matrix{data: data, rows: rows, cols: cols}
 }
+
+// Trace returns the sum of diagonal elements of m.
+// It panics if m is not a square matrix.
+func (m Matrix) Trace() float64 {
+	if m.rows != m.cols {
+		panic(fmt.Sprintf("mathrock: trace requires a square matrix, got %d%d", m.rows, m.cols))
+	}
+	var sum float64
+	for i := range m.rows {
+		sum += m.At(i, i)
+	}
+	return sum
+}
