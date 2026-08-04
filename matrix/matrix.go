@@ -211,3 +211,16 @@ func Zeros(rows, cols int) Matrix {
 	data := make([]float64, rows*cols)
 	return Matrix{data: data, rows: rows, cols: cols}
 }
+
+// Ones return a new Matrix with elements set to 1.
+// It panics if rows and cols is less than or equal to 0.
+func Ones(rows, cols int) Matrix {
+	if rows <= 0 || cols <= 0 {
+		panic(fmt.Sprintf("mathrock: matrix dimensions must be positive, got %d%d", rows, cols))
+	}
+	data := make([]float64, rows*cols)
+	for i := range data {
+		data[i] = 1
+	} 
+	return Matrix{data: data, rows: rows, cols: cols}
+}

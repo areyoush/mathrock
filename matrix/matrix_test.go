@@ -1056,3 +1056,66 @@ func TestZeros(t *testing.T) {
 		})
 	}
 }
+
+// TestOnes verifies Ones produces a matrix of the correct shape filled with ones, and panics for non-positive dimensions.
+func TestOnes(t *testing.T) {
+	tests := []struct {
+		name      string
+		rows      int
+		cols      int
+		wantPanic bool
+	}{
+		{
+			name: "2x3 ones",
+			rows: 2,
+			cols: 3,
+		},
+		{
+			name: "1x1 ones",
+			rows: 1,
+			cols: 1,
+		},
+		{
+			name: "square ones",
+			rows: 3,
+			cols: 3,
+		},
+		{
+			name:      "zero rows panics",
+			rows:      0,
+			cols:      3,
+			wantPanic: true,
+		},
+		{
+			name:      "zero cols panics",
+			rows:      3,
+			cols:      0,
+			wantPanic: true,
+		},
+		{
+			name:      "negative cols panics",
+			rows:      3,
+			cols:      -1,
+			wantPanic: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.wantPanic {
+				assertPanics(t, func() { Ones(tt.rows, tt.cols) })
+				return
+			}
+
+			got := Ones(tt.rows, tt.cols)
+			if got.rows != tt.rows || got.cols != tt.cols {
+				t.Errorf("Ones(%d, %d) shape = %dx%d, want %dx%d", tt.rows, tt.cols, got.rows, got.cols, tt.rows, tt.cols)
+			}
+			for i, v := range got.data {
+				if v != 1 {
+					t.Errorf("Ones(%d, %d) data[%d] = %v, want 1", tt.rows, tt.cols, i, v)
+				}
+			}
+		})
+	}
+}
