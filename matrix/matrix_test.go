@@ -3,6 +3,8 @@ package matrix
 import (
 	"reflect"
 	"testing"
+
+	"github.com/areyoush/mathrock/vector"
 )
 
 // assertPanics runs fn and fails the test if it does not panic.
@@ -1120,8 +1122,7 @@ func TestOnes(t *testing.T) {
 	}
 }
 
-// TestMatrixTrace verifies Trace returns the sum of diagonal elements and
-// panics on a non-square matrix.
+// TestMatrixTrace verifies Trace returns the sum of diagonal elements and panics on a non-square matrix.
 func TestMatrixTrace(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -1178,6 +1179,68 @@ func TestMatrixTrace(t *testing.T) {
 			got := m.Trace()
 			if got != tt.want {
 				t.Errorf("Trace() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// TestMatrixDiagonal verifies Diagonal returns the correct diagonal values as a Vector and panics on a non-square matrix.
+func TestMatrixDiagonal(t *testing.T) {
+	tests := []struct {
+		name      string
+		rows      int
+		cols      int
+		data      []float64
+		want      vector.Vector
+		wantPanic bool
+	}{
+		{
+			name: "3x3 matrix",
+			rows: 3, cols: 3,
+			data: []float64{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			want: vector.Vector{1, 5, 9},
+		},
+		{
+			name: "2x2 matrix",
+			rows: 2, cols: 2,
+			data: []float64{1, 2, 3, 4},
+			want: vector.Vector{1, 4},
+		},
+		{
+			name: "1x1 matrix",
+			rows: 1, cols: 1,
+			data: []float64{7},
+			want: vector.Vector{7},
+		},
+		{
+			name: "includes negatives",
+			rows: 2, cols: 2,
+			data: []float64{-1, 2, 3, -4},
+			want: vector.Vector{-1, -4},
+		},
+		{
+			name:      "non-square matrix panics",
+			rows:      2, cols: 3,
+			data:      []float64{1, 2, 3, 4, 5, 6},
+			wantPanic: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m, err := NewMatrix(tt.rows, tt.cols, tt.data)
+			if err != nil {
+				t.Fatalf("NewMatrix() unexpected error = %v", err)
+			}
+
+			if tt.wantPanic {
+				assertPanics(t, func() { m.Diagonal() })
+				return
+			}
+
+			got := m.Diagonal()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Diagonal() = %v, want %v", got, tt.want)
 			}
 		})
 	}

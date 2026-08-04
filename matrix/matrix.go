@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"strings"
+
+	"github.com/areyoush/mathrock/vector"
 )
 
 // Matrix represents a 2D matrix of float64 values, stored internally as a flat slice in row-major order.
@@ -236,4 +238,17 @@ func (m Matrix) Trace() float64 {
 		sum += m.At(i, i)
 	}
 	return sum
+}
+
+// Diagonal returns the diagonal elements of m as a Vector.
+// It panics if m is not a square matrix.
+func (m Matrix) Diagonal() vector.Vector {
+	if m.rows != m.cols {
+		panic(fmt.Sprintf("mathrock: diagonal requires a square matrix, got %dx%d", m.rows, m.cols))
+	}
+	result := make(vector.Vector, m.rows)
+	for i := range m.rows {
+		result[i] = m.At(i, i)
+	}
+	return result
 }
