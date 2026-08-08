@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.jpeg" width="800" alt="mathrock logo">
+  <img src="assets/mathrock.png" width="800" alt="mathrock logo">
 </p>
 
 <p align="center">
