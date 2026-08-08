@@ -44,6 +44,8 @@ b := vector.Vector{4, 5, 6}
 | **Subtract** | `a.Subtract(b)` | panics on length mismatch |
 | **Multiply** | `a.Multiply(b)` | panics on length mismatch |
 | **Scale** | `a.Scale(2)` | never fails |
+| **Abs** | `a.Abs()` | never fails |
+| **Apply** | `a.Apply(fn)` | never fails |
 
 #### Spatial & Statistical Operations
 
@@ -55,6 +57,8 @@ b := vector.Vector{4, 5, 6}
 | **Distance** | `a.Distance(b)` | panics on length mismatch |
 | **Sum** | `a.Sum()` | never fails |
 | **Mean** | `a.Mean()` | returns error for an empty vector |
+| **Max** | `a.Max()` | panics on an empty vector |
+| **Min** | `a.Min()` | panics on an empty vector |
 
 #### Utility Methods
 
@@ -76,6 +80,15 @@ a.Scale(2)                   // [2 4 6]
 a.Multiply(b)                // [4 10 18]
 a.Norm()                     // 3.7416573867739413
 a.Distance(b)                // 5.196152422706632
+a.Max()                      // 3
+a.Min()                      // 1
+
+vector.Vector{-1, 2, -3}.Abs() // [1 2 3]
+
+a.Apply(func(x float64) float64 {
+    return x * x
+})
+// [1 4 9]
 
 normalized, err := a.Normalize()
 if err != nil {
@@ -106,8 +119,21 @@ m, err := matrix.NewMatrix(2, 3, []float64{1, 2, 3, 4, 5, 6})
 // m:
 // [1 2 3]
 // [4 5 6]
+
+matrix.Identity(3)
+// [1 0 0]
+// [0 1 0]
+// [0 0 1]
+
+matrix.Zeros(2, 3)
+// [0 0 0]
+// [0 0 0]
+
+matrix.Ones(2, 2)
+// [1 1]
+// [1 1]
 ```
-*`NewMatrix` returns an error if `len(data) != rows*cols`.*
+*`NewMatrix` returns an error if `len(data) != rows*cols`. `Identity`, `Zeros`, and `Ones` panic on non-positive dimensions.*
 
 ### Methods
 
@@ -119,6 +145,7 @@ m, err := matrix.NewMatrix(2, 3, []float64{1, 2, 3, 4, 5, 6})
 | **Set** | `m.Set(0, 0, 99)` | panics on out-of-bounds index |
 | **Row** | `m.Row(1)` | panics on out-of-bounds index |
 | **Column** | `m.Column(1)` | panics on out-of-bounds index |
+| **Diagonal** | `m.Diagonal()` | panics if `m` is not square |
 
 #### Mathematical Operations
 
@@ -129,6 +156,8 @@ m, err := matrix.NewMatrix(2, 3, []float64{1, 2, 3, 4, 5, 6})
 | **Scale** | `m.Scale(2)` | never fails |
 | **Matmul** | `m.Matmul(other)` | panics if `m.cols != other.rows` |
 | **Transpose / T** | `m.Transpose()` / `m.T()` | never fails |
+| **Trace** | `m.Trace()` | panics if `m` is not square |
+| **Apply** | `m.Apply(fn)` | never fails |
 
 #### Utility Methods
 
@@ -136,6 +165,7 @@ m, err := matrix.NewMatrix(2, 3, []float64{1, 2, 3, 4, 5, 6})
 | :--- | :--- | :--- |
 | **Rows** | `m.Rows()` | never fails |
 | **Cols** | `m.Cols()` | never fails |
+| **IsSquare** | `m.IsSquare()` | never fails |
 | **Equals** | `m.Equals(other)` | returns `false` on dimension mismatch |
 | **EqualsWithTolerance** | `m.EqualsWithTolerance(other, 1e-6)` | returns `false` on dimension mismatch |
 | **String** | `fmt.Println(m)` | never fails |
@@ -164,8 +194,19 @@ a.Transpose()
 // [2 5]
 // [3 6]
 
-a.Rows()     // 2
-a.Cols()     // 3
+a.Rows()      // 2
+a.Cols()      // 3
+a.IsSquare()  // false
+
+square, _ := matrix.NewMatrix(2, 2, []float64{1, 2, 3, 4})
+square.Trace()     // 5
+square.Diagonal()  // [1 4]
+
+a.Apply(func(x float64) float64 {
+    return x * 2
+})
+// [2 4 6]
+// [8 10 12]
 
 a.Equals(a)  // true
 ```
@@ -176,4 +217,8 @@ a.Equals(a)  // true
 
 ## Status
 
-This is an early, actively developed library (`v0.1.x`). The API may still change as more methods are added. Contributions and suggestions are welcome.
+This is an early, actively developed library (`v0.1.x`). The API may still change as more methods are added. 
+
+## Contribution
+
+Contributions and Suggestions are welcome. Start a discussion regarding your proposed change before raising an issue or a PR. Let's talk.
